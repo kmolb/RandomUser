@@ -1,28 +1,56 @@
-import React, { Component } from 'react';
+import React from 'react';
+import REact, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
-import './App.css';
+class App extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+      users: []
+    };
+  }
 
-class App extends Component {
+  componentWillMount() {
+    fetch('https://randomuser.me/api/?results=20')
+    .then(response => {
+      if(response.ok) return response.json();
+      throw new Error('Request failed.');
+    })
+    .then(data => {
+      this.setState({users: data.results});
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
   render() {
+    const list = this.state.users.map( (u, i) => {
+        return <User key={u.login.md5} name={`${u.name.first} ${u.name.last}`} email={u.email} />;
+    });
     return (
-      <div className="App">
-        <header className="App-header">
-        
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div>
+        <h1>My users are:</h1>
+        {list}
       </div>
     );
   }
 }
+
+class App extends Component {
+  render() {
+    return (
+      <div style={{'borderStyle': 'dotted'}}>
+        <h3>{this.props.name}</h3>
+        <p>{this.props.email}</p>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <UserProfiles />,
+  document.getElementById('root')
+);
 
 export default App;
